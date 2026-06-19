@@ -229,16 +229,12 @@ pip install -r requirements.txt
 ### 6 - Executar a API
 
 ```bash
-uvicorn api.main:app --reload
+fastapi dev api/main.py
+para api
+
+python client/cliente.py   
+para cliente 
 ```
-
-Saída esperada:
-
-```bash
-INFO: Uvicorn running on http://127.0.0.1:8000
-```
-
----
 
 ## 🧠 Conceitos Aplicados
 
