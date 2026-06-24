@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from api.database import criar_db_tabelas
+from api.database.database import criar_db_tabelas
 from api.routers import livros_router
 
 @asynccontextmanager
