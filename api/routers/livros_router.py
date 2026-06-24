@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Response
 from sqlmodel import Session
 
-from api.database import get_session
+from api.database.database import get_session
 from api.models import ConfirmaDelete, LivroPayload, LivroPatch, LivroResposta
 from api.services.livros_service import (
     listar_livros,
