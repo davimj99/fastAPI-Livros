@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from api.database import criar_db_tabelas
+from api.database.database import criar_db_tabelas
 from api.routers import livros_router
 
 @asynccontextmanager
@@ -11,3 +11,5 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="API de livros", lifespan=lifespan)
 app.include_router(livros_router.router)
+
+
