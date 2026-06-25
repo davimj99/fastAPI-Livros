@@ -51,7 +51,7 @@ async def criar(payload: LivroPayload, session: SessionDep) -> LivroResposta:
     response_model=LivroResposta,
     responses={404: {"description": "Livro não encontrado."}},
 )
-async def substituir(
+async def substituir_todo_livro(
     livro_id: UUID, payload: LivroPayload, session: SessionDep
 ) -> LivroResposta:
     return substituir_livro(livro_id, payload, session)
@@ -65,7 +65,7 @@ async def substituir(
         404: {"description": "Livro não encontrado."},
     },
 )
-async def atualizar(
+async def atualizar_por_partes(
     livro_id: UUID, patch: LivroPatch, session: SessionDep
 ) -> LivroResposta:
     return atualizar_livro(livro_id, patch, session)
