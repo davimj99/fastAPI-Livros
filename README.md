@@ -1,13 +1,15 @@
-# 📚 FastAPI Curso - API de Livros
+# 📚 FastAPI Livros — API REST de Gerenciamento de Livros
 
-Projeto desenvolvido durante os estudos de FastAPI, com foco na criação de APIs REST modernas utilizando Python, FastAPI e SQLModel.
+Projeto desenvolvido durante os estudos de FastAPI, com foco na criação de APIs REST modernas utilizando Python, FastAPI e SQLModel. O projeto evoluiu para uma arquitetura modular com separação de responsabilidades entre routers, services, schemas e banco de dados.
+
+---
 
 ## 🚀 Tecnologias Utilizadas
 
 - Python 3.13
 - FastAPI
 - SQLModel
-- SQLite
+- Começou em SQLite foi migrado pra PostgreSQL
 - Uvicorn
 - Pydantic
 - UUID
@@ -17,22 +19,35 @@ Projeto desenvolvido durante os estudos de FastAPI, com foco na criação de API
 ## 📂 Estrutura do Projeto
 
 ```bash
-FASTAPICURSO/
+FASTAPI-LIVROS/
 │
 ├── api/
-│   ├── routers/
-│   │   └── livros_router.py
+│   ├── core/                  # Configurações centrais da aplicação
 │   │
-│   ├── database.py
-│   ├── main.py
-│   └── models.py
-│
-├── client/
+│   ├── database/
+│   │   ├── __init__.py
+│   │   └── database.py        # Configuração e sessão do banco de dados
+│   │
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   └── livros_router.py   # Endpoints de livros
+│   │
+│   ├── services/              # Regras de negócio / lógica de serviço
+│   │
 │   ├── __init__.py
-│   └── cliente.py
+│   ├── main.py                # Ponto de entrada da aplicação
+│   ├── models.py              # Modelos do banco de dados (SQLModel)
+│   └── schemas.py             # Schemas de entrada e saída (Pydantic)
 │
-├── database.db
-├── livros.csv
+├── client/                    # Cliente HTTP para teste manual
+│
+├── notas/                     # Anotações e rascunhos de estudo
+│
+├── venv/                      # Ambiente virtual (não versionado)
+│
+├── .env                       # Variáveis de ambiente
+├── .gitignore
+├── livros.csv                 # Dataset de livros para importação
 ├── requirements.txt
 └── README.md
 ```
@@ -43,13 +58,12 @@ FASTAPICURSO/
 
 ### Livros
 
-- ✅ Listar livros
+- ✅ Listar livros (com paginação)
 - ✅ Buscar livro por ID
 - ✅ Cadastrar livro
 - ✅ Atualizar livro completo (PUT)
 - ✅ Atualizar livro parcialmente (PATCH)
 - ✅ Excluir livro
-- ✅ Paginação de resultados
 
 ---
 
@@ -58,13 +72,7 @@ FASTAPICURSO/
 ### Listar Livros
 
 ```http
-GET /livros
-```
-
-Parâmetros:
-
-```http
-?page=1
+GET /livros?page=1
 ```
 
 ---
@@ -83,8 +91,6 @@ GET /livros/{livro_id}
 POST /livros
 ```
 
-Exemplo:
-
 ```json
 {
   "autor": "Machado de Assis",
@@ -96,13 +102,11 @@ Exemplo:
 
 ---
 
-### Atualizar Livro
+### Atualizar Livro (completo)
 
 ```http
 PUT /livros/{livro_id}
 ```
-
-Exemplo:
 
 ```json
 {
@@ -120,8 +124,6 @@ Exemplo:
 ```http
 PATCH /livros/{livro_id}
 ```
-
-Exemplo:
 
 ```json
 {
@@ -141,19 +143,13 @@ DELETE /livros/{livro_id}
 
 ## 🗄️ Banco de Dados
 
-O projeto utiliza SQLite para persistência dos dados.
+O projeto utiliza **SQLite** para persistência dos dados, configurado em `api/database/database.py`.
 
-Arquivo:
+Modelagem principal (`api/models.py`):
 
-```bash
-database.db
 ```
-
-Modelagem principal:
-
-```python
 Livro
-├── uuid
+├── uuid      (chave primária)
 ├── autor
 ├── titulo
 ├── editora
@@ -164,98 +160,78 @@ Livro
 
 ## 📖 Documentação Automática
 
-Após iniciar a aplicação:
+Com a aplicação rodando, acesse:
 
-### Swagger UI
-
-```bash
-http://localhost:8000/docs
-```
-
-### ReDoc
-
-```bash
-http://localhost:8000/redoc
-```
+| Interface | URL |
+|-----------|-----|
+| Swagger UI | http://localhost:8000/docs |
+| ReDoc | http://localhost:8000/redoc |
 
 ---
 
 ## ▶️ Como Executar
 
-### 1 - Clonar o projeto
+### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/fastapi-curso.git
+git clone https://github.com/seu-usuario/fastapi-livros.git
+cd fastapi-livros
 ```
 
-### 2 - Entrar na pasta
+### 2. Criar e ativar o ambiente virtual
 
 ```bash
-cd fastapi-curso
-```
-
-### 3 - Criar ambiente virtual
-
-Windows:
-
-```bash
+# Windows
 python -m venv venv
-```
-
-### 4 - Ativar ambiente virtual
-
-Windows:
-
-```bash
 venv\Scripts\activate
-```
 
-Linux/Mac:
-
-```bash
+# Linux / macOS
+python -m venv venv
 source venv/bin/activate
 ```
 
----
-
-### 5 - Instalar dependências
+### 3. Instalar dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+### 4. Configurar variáveis de ambiente
 
-### 6 - Executar a API
+Renomeie o arquivo `.env.example` para `.env` (se houver) ou edite o `.env` existente com suas configurações.
+
+### 5. Executar a API
 
 ```bash
 fastapi dev api/main.py
-para api
-
-python client/cliente.py   
-para cliente 
 ```
+
+### 6. Executar o cliente de teste (opcional)
+
+```bash
+python client/cliente.py
+```
+
+---
 
 ## 🧠 Conceitos Aplicados
 
-- API REST
-- CRUD
-- FastAPI
-- SQLModel
-- SQLite
-- UUID
-- Paginação
-- Validação de Dados
+- API REST com FastAPI
+- CRUD completo
+- Arquitetura modular (routers / services / schemas / models)
+- SQLModel + SQLite
+- UUID como chave primária
+- Paginação de resultados
+- Validação de dados com Pydantic / Schemas
 - Dependency Injection
-- Pydantic
-- Tratamento de Exceções HTTP
-- Arquitetura Modular
+- Tratamento de exceções HTTP
+- Variáveis de ambiente com `.env`
 
 ---
 
 ## 🎯 Objetivo do Projeto
 
-Projeto desenvolvido para praticar a criação de APIs modernas com FastAPI, aplicando conceitos fundamentais de desenvolvimento backend, persistência de dados e boas práticas de organização de código.
+Projeto desenvolvido para praticar a criação de APIs modernas com FastAPI, aplicando boas práticas de organização de código, separação de responsabilidades e persistência de dados com SQLModel.
 
 ---
 
@@ -263,10 +239,6 @@ Projeto desenvolvido para praticar a criação de APIs modernas com FastAPI, apl
 
 **David Luiz Souza Nascimento**
 
-- Python
-- FastAPI
-- SQL
-- Git/GitHub
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-David%20Souza-blue?logo=linkedin)](https://www.linkedin.com/in/davisouza99)
 
-LinkedIn:
-www.linkedin.com/in/davisouza99
+Habilidades: Python · FastAPI · SQL · Git/GitHub
