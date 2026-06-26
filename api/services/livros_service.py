@@ -3,7 +3,8 @@ from uuid import UUID, uuid4
 from fastapi import HTTPException
 from sqlmodel import Session, col, func, select
 
-from api.models import ConfirmaDelete, Livro, LivroPayload, LivroPatch, LivroResposta
+from api.models import Livro
+from api.schemas import ConfirmaDelete, LivroPayload, LivroPatch, LivroResposta
 
 
 def _get_or_404(livro_id: UUID, session: Session) -> Livro:
