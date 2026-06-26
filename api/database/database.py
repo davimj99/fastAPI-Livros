@@ -1,19 +1,14 @@
-import os
 import csv
 import logging
-from pathlib import Path  # ← Path resolve o problema do caminho relativo
+from pathlib import Path
 from sqlmodel import create_engine, Session, SQLModel, select
-from dotenv import load_dotenv
+from api.core.config import get_settings
 from api.models import Livro
 
-load_dotenv()
 logger = logging.getLogger(__name__)
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL não encontrada no ambiente!")
-
-engine = create_engine(DATABASE_URL, echo=False)  # echo=True só em dev
+settings = get_settings()
+engine = create_engine(settings.database_url, echo=settings.db_echo)
 
 
 def criar_db_tabelas() -> None:
@@ -26,12 +21,7 @@ def get_session():
 
 
 def popular_banco_com_csv(caminho_csv: Path | None = None) -> None:
-    """
-    Importa livros do CSV para o banco.
-    Usa o arquivo `livros.csv` na raiz do projeto por padrão.
-    """
     if caminho_csv is None:
-        # __file__ = api/database/database.py → .parent.parent.parent = raiz
         caminho_csv = Path(__file__).parent.parent.parent / "livros.csv"
 
     with Session(engine) as session:
@@ -44,7 +34,6 @@ def popular_banco_com_csv(caminho_csv: Path | None = None) -> None:
             return
 
         livros: list[Livro] = []
-
         with open(caminho_csv, encoding="utf-8") as f:
             for i, linha in enumerate(csv.DictReader(f, delimiter=";"), start=1):
                 try:
@@ -57,6 +46,6 @@ def popular_banco_com_csv(caminho_csv: Path | None = None) -> None:
                 except (KeyError, ValueError) as e:
                     logger.warning(f"Linha {i} ignorada — erro: {e}")
 
-        session.add_all(livros)  # add_all é mais eficiente que add em loop
+        session.add_all(livros)
         session.commit()
         logger.info(f"{len(livros)} livros importados com sucesso.")
